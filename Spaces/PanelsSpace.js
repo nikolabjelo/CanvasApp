@@ -5,7 +5,8 @@ The Panel Space y the place wehre all panels live, no matter who create them.
 */
 
 function newPanelsSpace () {
-  var thisObject = {
+  let thisObject = {
+    visible: true,
     container: undefined,
     createNewPanel: createNewPanel,
     destroyPanel: destroyPanel,
@@ -16,7 +17,7 @@ function newPanelsSpace () {
     initialize: initialize
   }
 
-  var container = newContainer()
+  let container = newContainer()
   container.initialize()
   thisObject.container = container
   thisObject.container.isDraggeable = false
@@ -24,6 +25,7 @@ function newPanelsSpace () {
   container.displacement.containerName = 'Panels Space'
   container.frame.containerName = 'Panels Space'
 
+  panelsMap = new Map()
   return thisObject
 
   function initialize () {
@@ -32,7 +34,7 @@ function newPanelsSpace () {
 
   }
 
-  function createNewPanel (pType, pParameters) {
+  function createNewPanel (pType, pParameters, pOwner) {
     let panel
 
     switch (pType) {
@@ -47,18 +49,27 @@ function newPanelsSpace () {
       case 'Products Panel':
         {
           panel = newProductsPanel()
-          panel.initialize()
+          panel.fitFunction = canvas.chartSpace.fitIntoVisibleArea
+          panel.container.isVisibleFunction = canvas.chartSpace.isThisPointVisible
           break
         }
       case 'Plotter Panel':
         {
           panel = getNewPlotterPanel(pParameters.devTeam, pParameters.plotterCodeName, pParameters.moduleCodeName, pParameters.panelCodeName)
+          panel.fitFunction = canvas.chartSpace.fitIntoVisibleArea
+          panel.container.isVisibleFunction = canvas.chartSpace.isThisPointVisible
           panel.initialize()
           break
         }
     }
 
-    thisObject.panels.push(panel)
+    let panelArray = panelsMap.get(pOwner)
+    if (panelArray === undefined) {
+      panelArray = []
+      panelsMap.set(pOwner, panelArray)
+    }
+
+    panelArray.push(panel)
 
     panel.handle = Math.floor((Math.random() * 10000000) + 1)
 
@@ -70,34 +81,54 @@ function newPanelsSpace () {
       let panel = thisObject.panels[i]
 
       if (panel.handle === pPanelHandle) {
+        if (panel.finalize !== undefined) {
+          panel.finalize()
+        }
+
         thisObject.panels.splice(i, 1)  // Delete item from array.
         return
       }
     }
   }
 
-  function getPanel (pPanelHandle) {
-    for (let i = 0; i < thisObject.panels.length; i++) {
-      let panel = thisObject.panels[i]
+  function getPanel (pPanelHandle, pOwner) {
+    thisObject.panels = panelsMap.get(pOwner)
+    if (thisObject.panels != undefined) {
+      for (let i = 0; i < thisObject.panels.length; i++) {
+        let panel = thisObject.panels[i]
 
-      if (panel.handle === pPanelHandle) {
-        return panel
+        if (panel.handle === pPanelHandle) {
+          return panel
+        }
       }
     }
   }
 
   function draw () {
+    if (thisObject.visible !== true) { return }
+
     thisObject.container.frame.draw(false, false)
 
-        /* When we draw a time machine, that means also to draw all the charts in it. */
+    thisObject.panels = panelsMap.get('Global')
+    if (thisObject.panels !== undefined) {
+      for (let i = 0; i < thisObject.panels.length; i++) {
+        let panel = thisObject.panels[i]
+        panel.draw()
+      }
+    }
 
-    for (var i = 0; i < thisObject.panels.length; i++) {
-      let panel = thisObject.panels[i]
-      panel.draw()
+    thisObject.panels = panelsMap.get(window.CHART_ON_FOCUS)
+    if (thisObject.panels !== undefined) {
+      for (let i = 0; i < thisObject.panels.length; i++) {
+        let panel = thisObject.panels[i]
+        panel.draw()
+      }
     }
   }
 
   function getContainer (point) {
+    if (thisObject.visible !== true) { return }
+
     let container
 
         /*
@@ -106,17 +137,17 @@ function newPanelsSpace () {
         so panels overlapping others are picked firt although they are drawn last.
 
         */
+    if (thisObject.panels !== undefined) {
+      for (var i = thisObject.panels.length - 1; i >= 0; i--) {
+        container = thisObject.panels[i].getContainer(point)
 
-    for (var i = thisObject.panels.length - 1; i >= 0; i--) {
-      container = thisObject.panels[i].getContainer(point)
+        if (container !== undefined) {
+              /* We found an inner container which has the point. We return it. */
 
-      if (container !== undefined) {
-                /* We found an inner container which has the point. We return it. */
-
-        return container
+          return container
+        }
       }
     }
-
         /* The point does not belong to any inner container, so we return the current container. */
 
     return thisObject.container

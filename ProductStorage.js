@@ -77,7 +77,7 @@ function newProductStorage (pName) {
 
       thisObject.fileSequences = undefined
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err.stack) }
     }
   }
 
@@ -171,7 +171,7 @@ function newProductStorage (pName) {
 
               case GLOBAL.CUSTOM_FAIL_RESPONSE.result: {
                 if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> Received CUSTOM FAIL Response.') }
-                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> err.message = ' + err.message) }
+                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> err= ' + err.stack) }
 
                 callBackFunction(err)
                 return
@@ -186,7 +186,8 @@ function newProductStorage (pName) {
 
             let event = {
               totalValue: pCaller.getExpectedFiles(),
-              currentValue: pCaller.getFilesLoaded()
+              currentValue: pCaller.getFilesLoaded(),
+              filesNotLoaded: pCaller.getFilesNotLoaded()
             }
 
             thisObject.eventHandler.raiseEvent('Market File Loaded', event)
@@ -194,7 +195,7 @@ function newProductStorage (pName) {
             if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> event.currentValue = ' + event.currentValue) }
             if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> event.totalValue = ' + event.totalValue) }
 
-            if (event.currentValue === event.totalValue) {
+            if (event.currentValue + event.filesNotLoaded === event.totalValue) {
               dataSetsLoaded++
 
               if (INFO_LOG === true) { logger.write('[INFO] initialize -> onMarketFileReady -> dataSetsLoaded = ' + dataSetsLoaded) }
@@ -202,7 +203,7 @@ function newProductStorage (pName) {
               checkInitializeComplete()
             }
           } catch (err) {
-            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onMarketFileReady -> err = ' + err) }
+            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onMarketFileReady -> err = ' + err.stack) }
             callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
           }
         }
@@ -226,7 +227,7 @@ function newProductStorage (pName) {
 
               case GLOBAL.CUSTOM_FAIL_RESPONSE.result: {
                 if (INFO_LOG === true) { logger.write('[INFO] initialize -> onDailyFileReady -> Received CUSTOM FAIL Response.') }
-                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onDailyFileReady -> err.message = ' + err.message) }
+                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onDailyFileReady -> err= ' + err.stack) }
 
                 callBackFunction(err)
                 return
@@ -257,7 +258,7 @@ function newProductStorage (pName) {
               checkInitializeComplete()
             }
           } catch (err) {
-            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onDailyFileReady -> err = ' + err) }
+            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onDailyFileReady -> err = ' + err.stack) }
             callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
           }
         }
@@ -281,7 +282,7 @@ function newProductStorage (pName) {
 
               case GLOBAL.CUSTOM_FAIL_RESPONSE.result: {
                 if (INFO_LOG === true) { logger.write('[INFO] initialize -> onSingleFileReady -> Received CUSTOM FAIL Response.') }
-                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onSingleFileReady -> err.message = ' + err.message) }
+                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onSingleFileReady -> err= ' + err.stack) }
 
                 callBackFunction(err)
                 return
@@ -309,7 +310,7 @@ function newProductStorage (pName) {
               checkInitializeComplete()
             }
           } catch (err) {
-            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onSingleFileReady -> err = ' + err) }
+            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onSingleFileReady -> err = ' + err.stack) }
             callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
           }
         }
@@ -333,7 +334,7 @@ function newProductStorage (pName) {
 
               case GLOBAL.CUSTOM_FAIL_RESPONSE.result: {
                 if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> Received CUSTOM FAIL Response.') }
-                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> err.message = ' + err.message) }
+                if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> err= ' + err.stack) }
 
                 callBackFunction(err)
                 return
@@ -361,7 +362,7 @@ function newProductStorage (pName) {
               checkInitializeComplete()
             }
           } catch (err) {
-            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onFileSequenceReady -> err = ' + err) }
+            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onFileSequenceReady -> err = ' + err.stack) }
             callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
           }
         }
@@ -378,13 +379,13 @@ function newProductStorage (pName) {
               callBackFunction(GLOBAL.DEFAULT_OK_RESPONSE)
             }
           } catch (err) {
-            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> checkInitializeComplete -> err = ' + err) }
+            if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> checkInitializeComplete -> err = ' + err.stack) }
             callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
           }
         }
       }
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -424,4 +425,3 @@ function newProductStorage (pName) {
     }
   }
 }
-

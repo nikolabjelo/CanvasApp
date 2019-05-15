@@ -34,7 +34,7 @@ function newAnimation () {
 
       thisObject.stop()
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err.stack) }
     }s
   }
 
@@ -45,7 +45,7 @@ function newAnimation () {
             /* Nothing to do here yet. */
       callBackFunction(GLOBAL.CUSTOM_OK_RESPONSE)
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -56,7 +56,7 @@ function newAnimation () {
 
       animationLoop()  // Inside this function the animation process is started, and at the same time it creates a loop.
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] start -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] start -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -67,7 +67,7 @@ function newAnimation () {
 
       window.cancelAnimationFrame(animationLoopHandle)
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] stop -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] stop -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -78,7 +78,7 @@ function newAnimation () {
 
       callBackFunctions.set(key, callBack)
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] addCallBackFunction -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] addCallBackFunction -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -89,7 +89,7 @@ function newAnimation () {
 
       callBackFunctions.delete(key)
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] removeCallBackFunction -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] removeCallBackFunction -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
@@ -108,6 +108,10 @@ function newAnimation () {
 
         clearBrowserCanvas()
 
+                /* Let reset the current chart that is on focus */
+
+        window.CHART_ON_FOCUS = ''
+
                 /* We loop through the callback functions collections and execute them all. */
 
         callBackFunctions.forEach(function (callBackFunction) {
@@ -122,13 +126,11 @@ function newAnimation () {
 
       animationLoopHandle = window.requestAnimationFrame(animationLoop)
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] animationLoop -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] animationLoop -> err = ' + err.stack) }
     }
   }
 
   function clearBrowserCanvas () {
-    if (INFO_LOG === true) { logger.write('[INFO] clearBrowserCanvas -> Entering function.') }
-
     browserCanvasContext.beginPath()
 
     browserCanvasContext.rect(0, 0, browserCanvas.width, browserCanvas.height)

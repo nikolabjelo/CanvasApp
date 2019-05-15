@@ -17,6 +17,7 @@ function newTimeControlPanel () {
   thisObject.container.frame.containerName = 'Current Datetime'
 
   let timePeriod
+  let panelTabButton
 
   return thisObject
 
@@ -31,12 +32,12 @@ function newTimeControlPanel () {
 
     thisObject.container.frame.position = position
 
-    let buttonPosition
+    panelTabButton = newPanelTabButton()
+    panelTabButton.parentContainer = thisObject.container
+    panelTabButton.container.frame.parentFrame = thisObject.container.frame
+    panelTabButton.initialize()
 
-    let buttonNames = ['Fast Backwards', 'Play Backwards', 'Step Backwards', 'Pause', 'Step Forward', 'Play Forward', 'Fast Forward']
-    let lastX = 0
-
-    let datetime = INITIAL_DATE
+    let datetime = NEW_SESSION_INITIAL_DATE
 
     let datetimeDisplay = {
       currentDatetime: datetime,
@@ -45,11 +46,6 @@ function newTimeControlPanel () {
     }
 
     thisObject.datetimeDisplay = datetimeDisplay
-
-        /* Here we will listen to the event when time was changed due to a Bot Execution. */
-
-    canvas.bottomSpace.playStopButton.container.eventHandler.listenToEvent('Bot Execution Changed Datetime', onBotChangedTime)
-    canvas.bottomSpace.playStopButton.setDatetime(datetime)
 
     viewPort.eventHandler.listenToEvent('Zoom Changed', onZoomChanged)
     timePeriod = INITIAL_TIME_PERIOD
@@ -68,6 +64,9 @@ function newTimeControlPanel () {
   function getContainer (point) {
     let container
 
+    container = panelTabButton.getContainer(point)
+    if (container !== undefined) { return container }
+
         /* First we check if thisObject point is inside thisObject space. */
 
     if (thisObject.container.frame.isThisPointHere(point, true) === true) {
@@ -83,7 +82,6 @@ function newTimeControlPanel () {
 
   function setDatetime (pDatetime) {
     thisObject.datetimeDisplay.currentDatetime = new Date(pDatetime)
-    canvas.bottomSpace.playStopButton.setDatetime(pDatetime)
   }
 
   function addTime (seconds) {
@@ -94,9 +92,10 @@ function newTimeControlPanel () {
   }
 
   function draw () {
+    return
     thisObject.container.frame.draw(false, false, true)
-
     thisObject.datetimeDisplay.draw()
+    panelTabButton.draw()
   }
 
   function drawTimeDisplay () {
@@ -116,7 +115,7 @@ function newTimeControlPanel () {
 
     labelPoint = thisObject.container.frame.frameThisPoint(labelPoint)
 
-    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.SECONDARY
+    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.PRIMARY  
     browserCanvasContext.fillStyle = 'rgba(60, 60, 60, 0.50)'
     browserCanvasContext.fillText(label, labelPoint.x, labelPoint.y)
 
@@ -133,7 +132,7 @@ function newTimeControlPanel () {
 
     labelPoint = thisObject.container.frame.frameThisPoint(labelPoint)
 
-    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.SECONDARY
+    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.PRIMARY  
     browserCanvasContext.fillStyle = 'rgba(60, 60, 60, 0.50)'
     browserCanvasContext.fillText(label, labelPoint.x, labelPoint.y)
 
@@ -152,7 +151,7 @@ function newTimeControlPanel () {
 
     labelPoint = thisObject.container.frame.frameThisPoint(labelPoint)
 
-    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.SECONDARY
+    browserCanvasContext.font = fontSize + 'px ' + UI_FONT.PRIMARY  
     browserCanvasContext.fillStyle = 'rgba(60, 60, 60, 0.50)'
     browserCanvasContext.fillText(label, labelPoint.x, labelPoint.y)
   }

@@ -52,7 +52,7 @@ function newCurrentEvent () {
         hackedEcosystem[0].competitions[0].participants.push({
           devTeam: participant.clone.team.slug,
           bot: participant.clone.bot.slug,
-          pOperationsId: participant.clone.id,
+          cloneId: participant.clone.id,
           release: '1.0.0'
         })
       })
@@ -70,7 +70,7 @@ function newCurrentEvent () {
   thisObject.container = container
 
   thisObject.container.frame.width = 150
-  thisObject.container.frame.height = BOTTOM_SPACE_HEIGHT
+  thisObject.container.frame.height = COCKPIT_SPACE_HEIGHT
 
   resize()
 
@@ -122,7 +122,7 @@ function newCurrentEvent () {
 
   function resize () {
     container.frame.position.x = viewPort.visibleArea.topLeft.x + thisObject.container.frame.width * 2
-    container.frame.position.y = viewPort.visibleArea.bottomLeft.y
+    container.frame.position.y = viewPort.visibleArea.bottomLeft.y + BREAKPOINT_HEIGHT
   }
 
   function onClick () {
@@ -178,7 +178,7 @@ function newCurrentEvent () {
 
     thisObject.container.frame.draw(false, false)
 
-    let breakpointsHeight = 14
+    let breakpointsHeight = 0
     let fontSize = 12
 
     let point = {

@@ -2,9 +2,6 @@
 let canvas
 let markets
 let ecosystem = newEcosystem()
-let cloudVM = newCloudVM()
-let INITIAL_ZOOM_LEVEL = -26       // This is the zoom level at the view port in which the APP starts.
-let INITIAL_TIME_PERIOD = recalculatePeriod(INITIAL_ZOOM_LEVEL)  // This value will be overwritten at the viewPort.initialize if the user had a prevous session with this same browser.
 let viewPort = newViewPort()
 
 function newDashboard () {
@@ -21,6 +18,9 @@ function newDashboard () {
 
   const DEBUG_START_UP_DELAY = 0 // 3000; // This is a waiting time in case there is a need to debug the very first steps of initialization, to be able to hit F12 on time.
 
+  let userProfileChangedEventSubscriptionId
+  let browserResizedEventSubscriptionId
+
   return thisObject
 
   function start () {
@@ -34,8 +34,8 @@ function newDashboard () {
       /* Here we will setup the global eventHandler that will enable the Canvas App to react to events happening outside its execution scope. */
 
       window.canvasApp.eventHandler = newEventHandler()
-      window.canvasApp.eventHandler.listenToEvent('User Profile Changed', userProfileChanged)
-      window.canvasApp.eventHandler.listenToEvent('Browser Resized', browserResized)
+      userProfileChangedEventSubscriptionId = window.canvasApp.eventHandler.listenToEvent('User Profile Changed', userProfileChanged)
+      browserResizedEventSubscriptionId = window.canvasApp.eventHandler.listenToEvent('Browser Resized', browserResized)
 
       loadImages(onImagesLoaded)
 
@@ -47,7 +47,7 @@ function newDashboard () {
         setTimeout(delayedStart, DEBUG_START_UP_DELAY)
       }
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] start -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] start -> err = ' + err.stack) }
     }
   }
 
@@ -70,7 +70,7 @@ function newDashboard () {
       canvas = newCanvas()
       canvas.initialize()
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] delayedStart -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] delayedStart -> err = ' + err.stack) }
     }
   }
 
@@ -80,7 +80,7 @@ function newDashboard () {
 
       canvas.topSpace.initialize()
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] userProfileChanged -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] userProfileChanged -> err = ' + err.stack) }
     }
   }
 
@@ -95,7 +95,7 @@ function newDashboard () {
 
       viewPort.initialize()
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] browserResized -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] browserResized -> err = ' + err.stack) }
     }
   }
 
@@ -228,7 +228,7 @@ function newDashboard () {
                         })
                         .catch(err => {
                           if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> getTeams -> Error fetching data from Teams Module.') }
-                          if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> getTeams -> err = ' + err) }
+                          if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> getTeams -> err = ' + err.stack) }
                           reject(err)
                         })
         })
@@ -262,10 +262,10 @@ function newDashboard () {
         callBack()
       }, err => {
         if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> Error fetching data from Teams Module.') }
-        if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> err = ' + err) }
+        if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> err = ' + err.stack) }
       })
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] loadImages -> err = ' + err.stack) }
     }
   }
 }

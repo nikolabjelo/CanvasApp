@@ -5,7 +5,7 @@ The Splash Screen is to show some 'loading...' controls while the app is being l
 */
 
 function newSplashScreen () {
-  var thisObject = {
+  let thisObject = {
     container: undefined,
     draw: draw,
     timeMachines: [],
@@ -44,7 +44,7 @@ function newSplashScreen () {
       canDrawLogo = true
     }
 
-    logo.src = window.canvasApp.urlPrefix + 'Images/aa-logo.png'
+    logo.src = window.canvasApp.urlPrefix + 'Images/Superalgos-logo-horz-sm-t.png'
 
     window.canvasApp.eventHandler.listenToEvent('Browser Resized', resize)
   }
@@ -83,12 +83,13 @@ function newSplashScreen () {
 
         /* First the AA Logo. */
 
-    let imageHeight = 96
-    let imageWidth = 480
-    let yDisplacement = -50
+    let imageHeight = 192 / 2
+    let imageWidth = 720 / 2
+    let yDisplacement = -60
+    let xDisplacement = -60
 
     let imagePoint = {
-      x: thisObject.container.frame.width * 1 / 2 - imageWidth / 2,
+      x: thisObject.container.frame.width * 1 / 2 - imageWidth / 2 + xDisplacement,
       y: thisObject.container.frame.height * 1 / 2 - imageHeight / 2 + yDisplacement
     }
 
@@ -132,6 +133,7 @@ function newSplashScreen () {
     }
 
     browserCanvasContext.font = fontSize + 'px ' + UI_FONT.PRIMARY
+    browserCanvasContext.font = 'Saira'
     browserCanvasContext.fillStyle = 'rgba(0, 0, 0,  ' + opacity + ')'
     browserCanvasContext.fillText(title, titlePoint.x, titlePoint.y)
   }

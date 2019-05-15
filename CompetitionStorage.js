@@ -38,7 +38,7 @@ function newCompetitionStorage (pName) {
 
       thisObject.fileSequences = undefined
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] finalize -> err = ' + err.stack) }
     }
   }
 
@@ -55,7 +55,7 @@ function newCompetitionStorage (pName) {
       for (let j = 0; j < pCompetition.participants.length; j++) {
         let devTeam = ecosystem.getTeam(pCompetition.participants[j].devTeam)
         let bot = ecosystem.getBot(devTeam, pCompetition.participants[j].bot)
-        let pOperationsId = pCompetition.participants[j].pOperationsId
+        bot.cloneId = pCompetition.participants[j].clonesId
         let product = ecosystem.getProduct(bot, 'Competition Trading History')
 
         if (INFO_LOG === true) { logger.write('[INFO] initialize -> key = ' + devTeam.codeName + '-' + bot.codeName + '-' + product.codeName) }
@@ -68,7 +68,7 @@ function newCompetitionStorage (pName) {
               if (INFO_LOG === true) { logger.write('[INFO] initialize -> File Sequence -> key = ' + pHost.codeName + '-' + pCompetition.codeName + '-' + devTeam.codeName + '-' + bot.codeName + '-' + product.codeName) }
 
               let fileSequence = newFileSequence()
-              fileSequence.initialize(devTeam, bot, product, thisSet, pExchange, pMarket, onFileSequenceReady, pOperationsId)
+              fileSequence.initialize(devTeam, bot, product, thisSet, pExchange, pMarket, onFileSequenceReady)
               fileSequences.push(fileSequence)
               dataSetsToLoad++
             }
@@ -94,7 +94,7 @@ function newCompetitionStorage (pName) {
 
                 case GLOBAL.CUSTOM_FAIL_RESPONSE.result: {
                   if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> Received CUSTOM FAIL Response.') }
-                  if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> err.message = ' + err.message) }
+                  if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> err= ' + err.stack) }
                   if (INFO_LOG === true) { logger.write('[INFO] initialize -> onFileSequenceReady -> This bot has not starting competing yet.') }
 
                   break
@@ -120,7 +120,7 @@ function newCompetitionStorage (pName) {
                 checkInitializeComplete()
               }
             } catch (err) {
-              if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onFileSequenceReady -> err = ' + err) }
+              if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> onFileSequenceReady -> err = ' + err.stack) }
               callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
             }
           }
@@ -134,7 +134,7 @@ function newCompetitionStorage (pName) {
                 callBackFunction(GLOBAL.DEFAULT_OK_RESPONSE)
               }
             } catch (err) {
-              if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> checkInitializeComplete -> err = ' + err) }
+              if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> checkInitializeComplete -> err = ' + err.stack) }
               callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
             }
           }
@@ -147,7 +147,7 @@ function newCompetitionStorage (pName) {
         callBackFunction(GLOBAL.DEFAULT_OK_RESPONSE)
       }
     } catch (err) {
-      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err) }
+      if (ERROR_LOG === true) { logger.write('[ERROR] initialize -> err = ' + err.stack) }
       callBackFunction(GLOBAL.DEFAULT_FAIL_RESPONSE)
     }
   }
